@@ -1,10 +1,10 @@
-import Quill from 'quill';
+import { Quill } from 'vue2-editor'
 import Keys from './constants/keys';
 import './quill.mention.css';
-import './blots/mention';
 
+const Embed = Quill.import('blots/embed');
 
-class Mention {
+export class Mention {
   constructor(quill, options) {
     this.isOpen = false;
     this.itemIndex = 0;
@@ -262,4 +262,29 @@ class Mention {
   }
 }
 
-Quill.register('modules/mention', Mention);
+export class MentionBlot extends Embed {
+    static create(data) {
+        const node = super.create();
+        const denotationChar = document.createElement('span');
+        denotationChar.className = 'ql-mention-denotation-char';
+        denotationChar.innerHTML = data.denotationChar;
+        node.appendChild(denotationChar);
+        node.innerHTML += data.value;
+        node.dataset.id = data.id;
+        node.dataset.value = data.value;
+        node.dataset.denotationChar = data.denotationChar;
+        return node;
+    }
+
+    static value(domNode) {
+        return {
+            id: domNode.dataset.id,
+            value: domNode.dataset.value,
+            denotationChar: domNode.dataset.denotationChar,
+        };
+    }
+}
+
+MentionBlot.blotName = 'mention';
+MentionBlot.tagName = 'span';
+MentionBlot.className = 'mention';
